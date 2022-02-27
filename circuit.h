@@ -30,9 +30,9 @@ class Circuit
 	int branchesCount;							// количество ветвей цепи
 	int nodesCount;								// количество узлов цепи
 	std::vector<GraphBranch> circuitBranches;	// ориентированный граф ветвей
-	std::vector<float> RValues;					// массив значений сопротивлений
-	std::vector<float> EValues;					// массив значений напряжений
-	std::vector<float> JValues;					// массив значений токов
+	std::vector<double> RValues;					// массив значений сопротивлений
+	std::vector<double> EValues;					// массив значений напряжений
+	std::vector<double> JValues;					// массив значений токов
 
 public:
 	// конструктор

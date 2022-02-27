@@ -27,8 +27,8 @@ int main()
 	Matr IR = calculateCircuit(circuit);
 	
 	// выводим результат в консоль
-	cout << "Токи в сопротивлениях ветвей, мА" << endl;
-	cout << IR.transp() * 1000 << endl;
+	cout << "Токи в сопротивлениях ветвей, А" << endl;
+	cout << IR.transp() << endl;
 
 
 	return 0;

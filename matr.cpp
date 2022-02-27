@@ -27,14 +27,14 @@ public:
 // создает матрицу из двумерного списка инициализации
 // реализует инициализацию, аналогичную двумерному массиву
 // автоматически выводит размеры матрицы исходя из размеров списков, что позволяет избавиться от явного задания размеров матрицы
-Matr::Matr(std::initializer_list<std::initializer_list<float>> il)
+Matr::Matr(std::initializer_list<std::initializer_list<double>> il)
 	: h(il.size())				// высота матрицы равна размеру списка списков
 	, w(il.begin()->size())		// ширина матрицы равна размеру подсписка
 	, n(h == w ? h : 0)			// порядок матрицы вычисляется, исходя из размеров матрицы
 {
 	auto it = il.begin(); // получаем итератор на начало списка
 
-	buffer = new float* [h];
+	buffer = new double* [h];
 
 	for (int i = 0; i < h; i++)
 	{
@@ -42,7 +42,7 @@ Matr::Matr(std::initializer_list<std::initializer_list<float>> il)
 
 		auto jt = it[i].begin(); // получаем итератор на начало i-го подсписка
 
-		buffer[i] = new float[w];
+		buffer[i] = new double[w];
 
 		for (int j = 0; j < w; j++)
 		{
@@ -52,32 +52,32 @@ Matr::Matr(std::initializer_list<std::initializer_list<float>> il)
 }
 
 // создает матрицу-столбец из одномерного списка инициализации
-Matr::Matr(std::initializer_list<float> il)
+Matr::Matr(std::initializer_list<double> il)
 	: h(il.size())			// высота матрицы равна размеру списка
 	, w(1)					// ширина матрицы равна единице
 	, n(h == 1 ? 1 : 0)		// у матрицы-столбца может быть только первый порядок или отсутствовать
 {
 	auto it = il.begin();
 
-	buffer = new float* [h];
+	buffer = new double* [h];
 
 	for (int i = 0; i < h; i++)
 	{
-		buffer[i] = new float(it[i]);
+		buffer[i] = new double(it[i]);
 	}
 }
 
 // создает матрицу указанных размеров и заполняет значениями val (по умолчанию нулями)
-Matr::Matr(int h, int w, float val)
+Matr::Matr(int h, int w, double val)
 	: h(h)
 	, w(w)
 	, n(h == w ? h : 0)
 {
-	buffer = new float* [h];
+	buffer = new double* [h];
 
 	for (int i = 0; i < h; i++)
 	{
-		buffer[i] = new float[w];
+		buffer[i] = new double[w];
 
 		for (int j = 0; j < w; j++)
 		{
@@ -90,11 +90,11 @@ Matr::Matr(int h, int w, float val)
 // из-за наличия динамических полей в классе следует использовать глубокое копирование
 Matr::Matr(const Matr& m) : h(m.h), w(m.w), n(m.n)
 {
-	buffer = new float* [h];
+	buffer = new double* [h];
 
 	for (int i = 0; i < h; i++)
 	{
-		buffer[i] = new float[w];
+		buffer[i] = new double[w];
 
 		for (int j = 0; j < w; j++)
 		{
@@ -117,7 +117,7 @@ Matr::~Matr()
 
 
 // метод индексации возвращает ссылку на элемент матрицы
-float& Matr::at(int i, int j)
+double& Matr::at(int i, int j)
 {
 	return *(*(buffer + i) + j);
 }
@@ -131,11 +131,11 @@ Matr& Matr::operator=(const Matr& m)
 	// присваиваемая матрица может быть другого размера, поэтому старую память следует освободить и выделить новую
 	clear();
 
-	buffer = new float* [h];
+	buffer = new double* [h];
 
 	for (int i = 0; i < h; i++)
 	{
-		buffer[i] = new float[w];
+		buffer[i] = new double[w];
 
 		for (int j = 0; j < w; j++)
 		{
@@ -187,7 +187,7 @@ Matr operator*(const Matr& m1, const Matr& m2)
 }
 
 // операция умножения матрицы на число
-Matr operator*(const Matr& m, float x)
+Matr operator*(const Matr& m, double x)
 {
 	Matr res = m;
 
@@ -254,7 +254,7 @@ Matr Matr::operator-()
 }
 
 // рекурсивная функция вычисления минора матрицы (только для квадратных матриц)
-float minor_r(const Matr& m, int mi, int mj)
+double minor_r(const Matr& m, int mi, int mj)
 {
 	if (m.n == 0) throw Matr::Ex("minor_r()");	// если матрица не квадратная, то генерируем ошибку
 
@@ -282,7 +282,7 @@ float minor_r(const Matr& m, int mi, int mj)
 	// находим определитель полученной матрицы по теореме Лапласа
 	if (M.n > 1)
 	{
-		float res = 0;
+		double res = 0;
 
 		for (int i = 0; i < m.n - 1; i++)
 		{
@@ -299,13 +299,13 @@ float minor_r(const Matr& m, int mi, int mj)
 }
 
 // вычисление определителя матрицы (только для квадратных матриц)
-float Matr::det()
+double Matr::det()
 {
 	if (n == 0) throw Ex("det()");	// если матрица не квадратная, то генерируем ошибку
 	if (n == 1) return buffer[0][0];	// определитель матрицы из одного элемента равен ее элементу
 
 	// находим определитель матрицы по теореме Лапласа
-	float res = 0;
+	double res = 0;
 
 	for (int i = 0; i < n; i++)
 	{
@@ -322,16 +322,14 @@ Matr Matr::rev()
 	if (n == 1) return Matr(1, 1, 1 / buffer[0][0]); // обратная матрица из одного элемента равна ее обратному элементу
 
 	Matr res(n, n);
-	float det = this->det();
+	double det = this->det();
+	if (det < 1.0e-15) throw Ex("zero determinant");
 
-	if (det)
+	for (int i = 0; i < n; i++)
 	{
-		for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
 		{
-			for (int j = 0; j < n; j++)
-			{
-				res.buffer[i][j] = powf(-1, i + j) * minor_r(*this, j, i) / det;
-			}
+			res.buffer[i][j] = powf(-1, i + j) * minor_r(*this, j, i) / det;
 		}
 	}
 

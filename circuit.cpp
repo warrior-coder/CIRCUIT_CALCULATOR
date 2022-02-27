@@ -17,7 +17,7 @@ Circuit::Circuit(const std::string& path)
 	std::ifstream ifl(path);
 
 	int valuei, branchBegin, branchEnd;
-	float valuef;
+	double valuef;
 	char skipLine[256];
 
 	ifl.getline(skipLine, 256);
@@ -96,7 +96,7 @@ matr::Matr Circuit::getResistorsMatrix() const
 
 	for (int i = 0; i < branchesCount; i++)
 	{
-		R.at(i, 0) = RValues[i];
+		R.at(i, 0) = RValues[i] < 1.0e-10 ? 1.0e-10 : RValues[i];
 	}
 
 	return R;

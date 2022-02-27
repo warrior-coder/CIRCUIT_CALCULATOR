@@ -21,7 +21,7 @@ class Matr
 {
 private:
 
-	float** buffer;	// буфер хранени€ данных
+	double** buffer;	// буфер хранени€ данных
 	int h;			// высота матрицы (количество строк)
 	int w;			// ширина матрицы (количество столбцов)
 	int n;			// пор€док матрицы (только дл€ квадратных матриц, иначе 0)
@@ -32,28 +32,28 @@ public:
 	class Ex;
 
 	// конструкторы
-	Matr(std::initializer_list<std::initializer_list<float>>);
-	Matr(std::initializer_list<float>);
-	Matr(int, int, float = 0);
+	Matr(std::initializer_list<std::initializer_list<double>>);
+	Matr(std::initializer_list<double>);
+	Matr(int, int, double = 0);
 	Matr(const Matr&);
 
 	// деструктор
 	~Matr();
 
 	// метод индексации
-	float& at(int, int);
+	double& at(int, int);
 
 	// аривметические операции
 	Matr operator-();
 	Matr& operator=(const Matr&);
 	friend Matr operator+(const Matr&, const Matr&);
 	friend Matr operator-(const Matr&, const Matr&);
-	friend Matr operator*(const Matr&, float);
+	friend Matr operator*(const Matr&, double);
 	friend Matr operator*(const Matr&, const Matr&);
 	friend std::ostream& operator<<(std::ostream&, const Matr&);
 
-	friend float minor_r(const Matr&, int, int);
-	float det();
+	friend double minor_r(const Matr&, int, int);
+	double det();
 	Matr rev();
 	friend Matr diag(const Matr&);
 	Matr transp();
