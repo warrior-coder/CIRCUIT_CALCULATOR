@@ -13,28 +13,28 @@ int main()
 {
 	// устанавливаем режим консоли
 	setlocale(LC_ALL, "ru");
-	cout.precision(4);
 	cout.setf(ios::fixed);
+	cout.precision(4);
 
 	try
 	{
-		ReaderTXT reader{ "Resources/CircuitData1.txt" };
-
-		// читаем исходные данные электрической цепи из файла 
-		CircuitDC circuit{ reader.Read() };
-
+		// указываем файл с данными электрической цепи
+		ReaderTXT reader("Resources/CircuitData1.txt");
+		
+		// читаем исходные данные и заносим их в электрическую цепь
+		CircuitDC circuitDC(reader.Read());
+		
 		// расчитываем электрическую цепь
-		MatrixD matrix{ CircuitCalculator::CalculateCircuit(circuit) };
+		MatrixD IR = CircuitCalculator::CalculateCircuit(circuitDC);
 
 		// выводим результат в консоль
 		cout << "Токи в сопротивлениях ветвей, А" << endl;
-		cout << matrix << endl;
+		cout << IR << endl;
 	}
 	catch (const std::exception& ex)
 	{
 		cerr << ex.what() << endl;
 	}
-
 
 	return 0;
 }

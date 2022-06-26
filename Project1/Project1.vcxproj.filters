@@ -20,7 +20,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\CircuitData.txt">
+    <Text Include="Resources\CircuitData2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Resources\CircuitData1.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

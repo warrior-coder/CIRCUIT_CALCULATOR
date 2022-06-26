@@ -133,7 +133,8 @@
     <ClCompile Include="Sources\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\CircuitData.txt" />
+    <Text Include="Resources\CircuitData1.txt" />
+    <Text Include="Resources\CircuitData2.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\FileReader.hpp" />

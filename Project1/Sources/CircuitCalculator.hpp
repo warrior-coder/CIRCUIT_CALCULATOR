@@ -1,17 +1,23 @@
+// файл "CircuitCalculator.hpp"
+// в данном файле описан статический класс CircuitCalculator дл€ рассчета электрических цепей
+
 #pragma once
 
 #include <iostream>
-#include <vector>
-#include "MATRIX/Matrix.hpp"
+#include "MATRIX/Matrix.hpp" // подключаем библиотеку "Matrix.hpp" дл€ работы с матрицами
 #include "CircuitDC.hpp"
-
 
 namespace cc
 {
 
+// статический класс калькул€тор электрической цепи
 class CircuitCalculator
 {
+private:
+	CircuitCalculator(); // объ€вл€ем закрытый констрцктор, чтобы запретить создание экземпл€ров класса
+
 public:
+
 	// функци€ расчета электрической цепи посто€нного тока методом узловых потенциалов
 	static mtx::MatrixD CalculateCircuit(const CircuitDC& circuitDC)
 	{
@@ -46,9 +52,7 @@ public:
 
 		return IR;
 	}
+
 };
 
 }
-
-
-
