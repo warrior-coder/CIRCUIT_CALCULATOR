@@ -1,153 +1,139 @@
-// файл "circuit.h"
-// в данном файле описан класс CircuitDC для работы с графом электрической цепи
-
-
-// защита от повторного включения заголовочного файла
 #pragma once
 
-
-// подключение необходимых библиотек
 #include <iostream>
-#include <fstream>
 #include <vector>
-
-#include "Matrix.hpp"
+#include <string>
+#include <strstream>
+#include "MATRIX/Matrix.hpp" // подключаем библиотеку "Matrix.hpp" для работы с матрицами
 
 
 namespace cc
 {
+
+// структура обобщенной ветви электрической цепи
+typedef struct _CircuitBranch
+{
+	size_t beginNode;	// индекс начального узла
+	size_t endNode;		// индекс конечного узла
+	double RValue;		// значение сопротивления ветви
+	double EValue;		// значение источника напряжения ветви
+	double JValue;		// значение источника тока ветви
+
+}CircuitBranch;
+
 
 // класс электрическая цепь
 class CircuitDC
 {
-	// структура ветви ориентированный графа
-	// определяет направление ветви графа индексами начального и конечного узлов 
-	typedef struct _GraphBranch
-	{
-		int begin;
-		int end;
-	}GraphBranch;
-
-	int branchesCount;							// количество ветвей цепи
-	int nodesCount;								// количество узлов цепи
-	std::vector<GraphBranch> circuitBranches;	// ориентированный граф ветвей
-	std::vector<double> RValues;					// массив значений сопротивлений
-	std::vector<double> EValues;					// массив значений напряжений
-	std::vector<double> JValues;					// массив значений токов
+private:
+	size_t _branchesCount;							// количество ветвей цепи
+	size_t _nodesCount;								// количество узлов цепи
+	std::vector<CircuitBranch> _circuitBranches;	// ориентированный граф ветвей
 
 public:
+	// конструктор по умолчанию
+	CircuitDC()
+		: _branchesCount(0u)
+		, _nodesCount(0u)
+		, _circuitBranches(0u)
+	{}
+
 	// конструктор
-	explicit CircuitDC(const std::string&);
+	explicit CircuitDC(const std::vector<std::string>& data)
+		: _branchesCount(0u)
+		, _nodesCount(0u)
+	{
+
+		for (const auto& line : data)
+		{
+			std::istrstream iss(line.c_str());
+			CircuitBranch circuitBranch{};
+
+			iss >> _branchesCount >> circuitBranch.beginNode >> circuitBranch.endNode >> circuitBranch.RValue >> circuitBranch.EValue >> circuitBranch.JValue;
+			_nodesCount = std::max(_nodesCount, circuitBranch.beginNode);
+			_nodesCount = std::max(_nodesCount, circuitBranch.endNode);
+			circuitBranch.beginNode -= 1;
+			circuitBranch.endNode -= 1;
+			_circuitBranches.push_back(circuitBranch);
+		}
+	}
+
+	CircuitDC(const CircuitDC&) = default; // конструктор копирования по умолчанию
+	CircuitDC(CircuitDC&&) noexcept = default; // конструктор перемещения по умолчанию
 
 	// деструктор по умолчанию
 	~CircuitDC() = default;
 
-	// методы получение матриц для исходной цепи
-	MatrixF GetNodesMatrix() const;
-	MatrixF GetCurrentSourcesMatrix() const;
-	MatrixF GetVoltageSourcesMatrix() const;
-	MatrixF GetResistorsMatrix() const;
-};
-
-}
-
-
-namespace cc
-{
-
-	// конструктор
-	// считывает исходные данные цепи из файла и на их основе формирует граф электрической цепи
-	CircuitDC::CircuitDC(const std::string& path)
-		: branchesCount(0)
-		, nodesCount(0)
-	{
-		std::ifstream ifl(path);
-
-		int valuei, branchBegin, branchEnd;
-		double valuef;
-		char skipLine[256];
-
-		ifl.getline(skipLine, 256);
-		ifl.getline(skipLine, 256);
-
-		while (!ifl.eof())
-		{
-			ifl >> branchesCount;
-
-			ifl >> valuei;
-			if ((branchBegin = valuei / 10) > nodesCount) nodesCount = branchBegin;
-			if ((branchEnd = valuei % 10) > nodesCount) nodesCount = branchEnd;
-			circuitBranches.push_back({ branchBegin - 1, branchEnd - 1 });
-
-			ifl >> valuef;
-			RValues.push_back(valuef);
-
-			ifl >> valuef;
-			EValues.push_back(valuef);
-
-			ifl >> valuef;
-			JValues.push_back(valuef);
-		}
-
-		ifl.close();
-	}
-
 	// создает топологическую узловую матрицу по графу исходной цепи
-	MatrixF CircuitDC::GetNodesMatrix() const
+	// в матрице соединений A высота равна числу узлов без одного (базисного), а ширина – числу ветвей графа
+	// элемент матрицы Aij равен
+	// 0,  если ветвь j не принадлежит узлу i
+	// 1,  если ветвь j выходит из узла i
+	// -1, если ветвь j входит в узел i
+	mtx::MatrixD GetNodalMatrix() const
 	{
-		MatrixF nodesMartix(nodesCount - 1, branchesCount);
+		mtx::MatrixD A(_nodesCount - 1, _branchesCount, 0.0);
 
-		for (int i = 0; i < nodesMartix.getH(); i++)
+		for (size_t i = 0; i < A.GetRows(); ++i)
 		{
-			for (int j = 0; j < nodesMartix.getW(); j++)
+			for (size_t j = 0; j < A.GetColumns(); ++j)
 			{
-				if (circuitBranches[j].begin == i) nodesMartix.at(i, j) = 1;
-				else if (circuitBranches[j].end == i) nodesMartix.at(i, j) = -1;
-				else nodesMartix.at(i, j) = 0;
+				if (_circuitBranches[j].beginNode == i)
+				{
+					A.at(i, j) = 1.0;
+				}
+				else if (_circuitBranches[j].endNode == i)
+				{
+					A.at(i, j) = -1.0;
+				}
+				else
+				{
+					A.at(i, j) = 0.0;
+				}
 			}
 		}
 
-		return nodesMartix;
+		return A;
 	}
 
 	// создает матрицу источников тока для исходной цепи 
-	MatrixF CircuitDC::GetCurrentSourcesMatrix() const
+	mtx::MatrixD GetCurrentSourcesMatrix() const
 	{
-		MatrixF J(branchesCount, 1);
+		mtx::MatrixD J(_branchesCount, 1, 0.0);
 
-		for (int i = 0; i < branchesCount; i++)
+		for (size_t i = 0; i < J.GetRows(); ++i)
 		{
-			J.at(i, 0) = JValues[i];
+			J.at(i, 0) = _circuitBranches[i].JValue;
 		}
 
 		return J;
 	}
 
 	// создает матрицу источников напряжения для исходной цепи
-	MatrixF CircuitDC::GetVoltageSourcesMatrix() const
+	mtx::MatrixD GetVoltageSourcesMatrix() const
 	{
-		MatrixF E(branchesCount, 1);
+		mtx::MatrixD E(_branchesCount, 1, 0.0);
 
-		for (int i = 0; i < branchesCount; i++)
+		for (size_t i = 0; i < E.GetRows(); ++i)
 		{
-			E.at(i, 0) = EValues[i];
+			E.at(i, 0) = _circuitBranches[i].EValue;
 		}
 
 		return E;
 	}
 
 	// создает матрицу сопротивлений для исходной цепи
-	MatrixF CircuitDC::GetResistorsMatrix() const
+	mtx::MatrixD GetResistorsMatrix() const
 	{
-		MatrixF R(branchesCount, 1);
+		mtx::MatrixD R(_branchesCount, 1, 0.0);
 
-		for (int i = 0; i < branchesCount; i++)
+		for (size_t i = 0; i < R.GetRows(); ++i)
 		{
-			R.at(i, 0) = RValues[i] < 1.0e-10 ? 1.0e-10 : RValues[i];
+			R.at(i, 0) = _circuitBranches[i].RValue;
 		}
 
 		return R;
 	}
-
+};
 
 }

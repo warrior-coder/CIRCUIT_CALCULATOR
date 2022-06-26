@@ -133,7 +133,13 @@
     <ClCompile Include="Sources\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\circuit_data.txt" />
+    <Text Include="Resources\CircuitData.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\FileReader.hpp" />
+    <ClInclude Include="Sources\ReaderTXT.hpp" />
+    <ClInclude Include="Sources\CircuitDC.hpp" />
+    <ClInclude Include="Sources\CircuitCalculator.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

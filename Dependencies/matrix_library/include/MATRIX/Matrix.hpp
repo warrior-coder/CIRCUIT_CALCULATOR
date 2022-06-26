@@ -13,7 +13,7 @@
 namespace mtx
 {
 
-constexpr double _epsilon = 1e-10; // бесконечно малое число для double
+constexpr double _epsilon = 1e-15; // бесконечно малое число для double
 
 template<typename T>
 constexpr bool _IsZero(const T& value) noexcept // макрос сравнения числа с бесконечно малым
