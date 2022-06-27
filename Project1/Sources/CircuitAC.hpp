@@ -1,5 +1,5 @@
-// файл "CircuitDC.hpp"
-// в данном файле описан класс CircuitDC характеризующий электрическую цепь постоянного тока
+// файл "CircuitAC.hpp"
+// в данном файле описан класс CircuitAC характеризующий электрическую цепь переменного тока
 
 #pragma once
 
@@ -7,8 +7,8 @@
 #include <vector>
 #include <string>
 #include <strstream>
+#include "COMPLEX/Complex.hpp" // подключаем библиотеку "Complex.hpp" для работы с комплексными числами
 #include "MATRIX/Matrix.hpp" // подключаем библиотеку "Matrix.hpp" для работы с матрицами
-
 
 namespace cc
 {
@@ -18,60 +18,65 @@ namespace cc
 //
 //    +------(J)--------+
 //    |                 |   I,U
-// ---+---(E)---[ R ]---+---->---
+// ---+---(E)---[ Z ]---+---->---
 //
-typedef struct _CircuitDCBranch // структура обобщенной ветви электрической цепи
+// где Z = R + jXL - jXC
+//
+typedef struct _CircuitACBranch // структура обобщенной ветви электрической цепи
 {
-	size_t beginNode;	// индекс начального узла
-	size_t endNode;		// индекс конечного узла
-	double RValue;		// значение сопротивления ветви
-	double EValue;		// значение источника напряжения ветви
-	double JValue;		// значение источника тока ветви
-}CircuitDCBranch;
-
+	size_t beginNode;		// индекс начального узла
+	size_t endNode;			// индекс конечного узла
+	cpx::Complex ZValue;	// значение общего ветви
+	cpx::Complex EValue;	// значение источника напряжения ветви
+	cpx::Complex JValue;	// значение источника тока ветви
+}CircuitACBranch;
 
 // класс электрическая цепь постоянного тока
-class CircuitDC
+class CircuitAC
 {
 private:
 	size_t _branchesCount;							// количество ветвей цепи
 	size_t _nodesCount;								// количество узлов цепи
-	std::vector<CircuitDCBranch> _circuitBranches;	// ориентированный граф ветвей
+	std::vector<CircuitACBranch> _circuitBranches;	// ориентированный граф ветвей
 
 public:
-	CircuitDC() = delete; // конструктор по умолчанию
+	CircuitAC() = delete; // конструктор по умолчанию
 
 	// конструктор от массива строк данных (данные в строках должны быть разделены пробелами)
-	explicit CircuitDC(const std::vector<std::string>& data)
+	explicit CircuitAC(const std::vector<std::string>& data)
 		: _branchesCount(0u)
 		, _nodesCount(0u)
 	{
+		CircuitACBranch circuitBranch{};
+		double RValue{}, XLValue{}, XCValue{};
+		double EValueMod{}, EValueArg{}, JValueMod{}, JValueArg{};
 
-		CircuitDCBranch circuitBranch{};
-		
 		for (const auto& line : data)
 		{
 			std::istrstream iss(line.c_str());
-
+			
 			iss >> _branchesCount
 				>> circuitBranch.beginNode >> circuitBranch.endNode
-				>> circuitBranch.RValue
-				>> circuitBranch.EValue
-				>> circuitBranch.JValue;
-
+				>> RValue >> XLValue >> XCValue
+				>> EValueMod >> EValueArg
+				>> JValueMod >> JValueArg;
+			
 			_nodesCount = std::max(_nodesCount, circuitBranch.beginNode);
 			_nodesCount = std::max(_nodesCount, circuitBranch.endNode);
 			circuitBranch.beginNode -= 1;
 			circuitBranch.endNode -= 1;
+			circuitBranch.ZValue = cpx::Complex(RValue) + cpx::Complex(0.0, 1.0) * cpx::Complex(XLValue) - cpx::Complex(0.0, 1.0) * cpx::Complex(XCValue);
+			circuitBranch.EValue = cpx::Complex(EValueMod, EValueArg, cpx::EXP);
+			circuitBranch.JValue = cpx::Complex(JValueMod, JValueArg, cpx::EXP);
 
 			_circuitBranches.push_back(circuitBranch);
 		}
 	}
 
-	CircuitDC(const CircuitDC&) = default; // конструктор копирования по умолчанию
-	CircuitDC(CircuitDC&&) noexcept = default; // конструктор перемещения по умолчанию
+	CircuitAC(const CircuitAC&) = default; // конструктор копирования по умолчанию
+	CircuitAC(CircuitAC&&) noexcept = default; // конструктор перемещения по умолчанию
 
-	~CircuitDC() = default; // деструктор по умолчанию
+	~CircuitAC() = default; // деструктор по умолчанию
 
 	// методы получения свойств
 	size_t GetBranchesCount() const noexcept
@@ -90,9 +95,9 @@ public:
 	//  0, если ветвь j не принадлежит узлу i
 	//  1, если ветвь j выходит из узла i
 	// -1, если ветвь j входит в узел i
-	mtx::MatrixD GetNodalMatrix() const
+	mtx::MatrixC GetNodalMatrix() const
 	{
-		mtx::MatrixD A(_nodesCount - 1, _branchesCount, 0.0);
+		mtx::MatrixC A(_nodesCount - 1, _branchesCount, cpx::Complex(0.0, 0.0));
 
 		for (size_t i = 0; i < A.GetRows(); ++i)
 		{
@@ -100,15 +105,15 @@ public:
 			{
 				if (_circuitBranches[j].beginNode == i)
 				{
-					A.at(i, j) = 1.0;
+					A.at(i, j) = cpx::Complex(1.0, 0.0);
 				}
 				else if (_circuitBranches[j].endNode == i)
 				{
-					A.at(i, j) = -1.0;
+					A.at(i, j) = cpx::Complex(-1.0, 0.0);
 				}
 				else
 				{
-					A.at(i, j) = 0.0;
+					A.at(i, j) = cpx::Complex(0.0, 0.0);
 				}
 			}
 		}
@@ -117,9 +122,9 @@ public:
 	}
 
 	// создает матрицу источников тока для исходной цепи 
-	mtx::MatrixD GetCurrentSourcesMatrix() const
+	mtx::MatrixC GetCurrentSourcesMatrix() const
 	{
-		mtx::MatrixD J(_branchesCount, 1, 0.0);
+		mtx::MatrixC J(_branchesCount, 1, cpx::Complex(0.0, 0.0));
 
 		for (size_t i = 0; i < J.GetRows(); ++i)
 		{
@@ -130,9 +135,9 @@ public:
 	}
 
 	// создает матрицу источников напряжения для исходной цепи
-	mtx::MatrixD GetVoltageSourcesMatrix() const
+	mtx::MatrixC GetVoltageSourcesMatrix() const
 	{
-		mtx::MatrixD E(_branchesCount, 1, 0.0);
+		mtx::MatrixC E(_branchesCount, 1, cpx::Complex(0.0, 0.0));
 
 		for (size_t i = 0; i < E.GetRows(); ++i)
 		{
@@ -143,13 +148,13 @@ public:
 	}
 
 	// создает матрицу сопротивлений для исходной цепи
-	mtx::MatrixD GetResistorsMatrix() const
+	mtx::MatrixC GetResistorsMatrix() const
 	{
-		mtx::MatrixD R(_branchesCount, 1, 0.0);
+		mtx::MatrixC R(_branchesCount, 1, cpx::Complex(0.0, 0.0));
 
 		for (size_t i = 0; i < R.GetRows(); ++i)
 		{
-			R.at(i, 0) = _circuitBranches[i].RValue;
+			R.at(i, 0) = _circuitBranches[i].ZValue;
 		}
 
 		return R;

@@ -1,7 +1,8 @@
 // Complex.hpp
 // в данном файле описан класс Complex для работы с комплексными числами
 
-#pragma once
+#ifndef _COMPLEX_HPP_
+#define _COMPLEX_HPP_
 
 #include <iostream>
 #include <cmath>
@@ -155,3 +156,6 @@ public:
 };
 
 }
+
+
+#endif // !_COMPLEX_HPP_

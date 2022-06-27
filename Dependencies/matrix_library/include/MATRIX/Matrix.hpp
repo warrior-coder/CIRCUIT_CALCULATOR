@@ -141,6 +141,14 @@ public:
 using Double = double;
 using MatrixD = Matrix<Double>;
 
+
+#ifdef _COMPLEX_HPP_
+
+using MatrixC = Matrix<cpx::Complex>;
+
+#endif // _COMPLEX_HPP_
+
+
 }
 
 

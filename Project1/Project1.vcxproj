@@ -138,6 +138,7 @@
     <Text Include="Resources\CircuitData3.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\CircuitAC.hpp" />
     <ClInclude Include="Sources\FileReader.hpp" />
     <ClInclude Include="Sources\ReaderTXT.hpp" />
     <ClInclude Include="Sources\CircuitDC.hpp" />

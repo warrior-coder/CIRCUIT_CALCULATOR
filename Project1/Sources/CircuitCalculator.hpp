@@ -4,8 +4,10 @@
 #pragma once
 
 #include <iostream>
+#include "COMPLEX/Complex.hpp" // подключаем библиотеку "Complex.hpp" для работы с комплексными числами
 #include "MATRIX/Matrix.hpp" // подключаем библиотеку "Matrix.hpp" для работы с матрицами
 #include "CircuitDC.hpp"
+#include "CircuitAC.hpp"
 
 namespace cc
 {
@@ -49,6 +51,41 @@ public:
 
 		// вычисляем токи в сопротивлениях ветвей
 		mtx::MatrixD IR = G * (U + E);
+
+		return IR;
+	}
+	
+	// функция расчета электрической цепи переменного тока методом узловых потенциалов
+	static mtx::MatrixC CalculateCircuit(const CircuitAC& circuitAC)
+	{
+		// задаем матрицы с исходными данными
+		mtx::MatrixC Z = circuitAC.GetResistorsMatrix();
+		mtx::MatrixC E = circuitAC.GetVoltageSourcesMatrix();
+		mtx::MatrixC J = circuitAC.GetCurrentSourcesMatrix();
+		std::cout << Z << std::endl;
+		std::cout << E << std::endl;
+		std::cout << J << std::endl;
+
+		// формируем диагональную матрицу ZD из матрицы Z
+		mtx::MatrixC ZD = Z.GetDiagonal();
+		std::cout << ZD << std::endl;
+
+		// формируем матрицу соединений A для графа цепи
+		mtx::MatrixC A = circuitAC.GetNodalMatrix();
+		std::cout << A << std::endl;
+
+		// формируем матрицу проводимости Y из матрицы ZD
+		mtx::MatrixC Y = ZD.GetReverse();
+		std::cout << Y << std::endl;
+
+		// вычисляем потенциалы всех узлов цепи по отношению к базисному узлу
+		mtx::MatrixC F = (A * Y * A.GetTransposed()).GetReverse() * (-A * Y * E - A * J);
+
+		// вычисляем напряжение на всех ветвях цепи
+		mtx::MatrixC U = A.GetTransposed() * F;
+
+		// вычисляем токи в сопротивлениях ветвей
+		mtx::MatrixC IR = Y * (U + E);
 
 		return IR;
 	}
