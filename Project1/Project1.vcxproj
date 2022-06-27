@@ -81,8 +81,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\matrix_library\lib_Win32;$(SolutionDir)Dependencies\complex_library\lib_Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>MatrixLibrary.lib;ComplexLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\complex_library\lib_Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ComplexLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,6 +135,7 @@
   <ItemGroup>
     <Text Include="Resources\CircuitData1.txt" />
     <Text Include="Resources\CircuitData2.txt" />
+    <Text Include="Resources\CircuitData3.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\FileReader.hpp" />

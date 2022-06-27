@@ -1,29 +1,38 @@
-#pragma once
-
 // Complex.hpp
 // в данном файле описан класс Complex для работы с комплексными числами
 
+#pragma once
 
 #include <iostream>
 #include <cmath>
 #include <string>
 #include <sstream>
 
+
 namespace cpx
 {
 
-constexpr double _pi = 3.14159265358979;
-constexpr double _epsilon = 1e-10; // бесконечно малое число для double
+constexpr double _pi{ 3.14159265358979 }; // число пи
 
-constexpr bool _IsZero(const double& value) noexcept // макрос сравнения числа с бесконечно малым
-{
-	return value < _epsilon && -value < _epsilon;
-}
 
-constexpr bool _IsEqual(const double& value1, const double& value2) noexcept // макрос равенства двух чисел с бесконечно малой точностью
+class CompareDouble // статический класс сравненяи чисел double с точностью epsilon
 {
-	return (value1 - value2) < _epsilon && -(value1 - value2) < _epsilon;
-}
+private:
+	CompareDouble(); // объявляем закрытый конструктор, чтобы запретить создание экземпляров класса
+
+	static double _epsilon; // бесконечно малое число для double
+
+public:
+	template<typename T>
+	static bool IsZero(const T& value) noexcept; // макрос сравнения числа с бесконечно малым
+
+	template<typename T>
+	static bool AreEqual(const T& value1, const T& value2) noexcept; // макрос равенства двух чисел с бесконечно малой точностью
+
+	static void SetEpsilon(const double& epsilon) noexcept; // метод установки свойств
+	static double GetEpsilon(const double& epsilon) noexcept; // метод получения свойств
+};
+
 
 inline double _AtanDeg(const double& value); // тригонометрические функции от градусов
 inline double _CosDeg(const double& angleDeg);
@@ -45,17 +54,16 @@ enum class OutForm // флаги формы вывода
 };
 
 
-// класс комплексное число
-class Complex
+class Complex // класс комплексное число
 {
 private:
-	double _re;		// действительная часть (Real)
-	double _im;		// мнимая часть (Imaginary)
-	double _mod;	// модуль (Module)
-	double _arg;	// аргумент (Argument)
+	double _re;						// действительная часть (Real)
+	double _im;						// мнимая часть (Imaginary)
+	double _mod;					// модуль (Module)
+	double _arg;					// аргумент (Argument)
 
-	static OutForm _outForm; // флаг формы вывода комплексного числа
-	static size_t _outPrecision; // флаг количества знаков после запятой при выводе комплексного числа
+	static OutForm _outForm;		// флаг формы вывода комплексного числа
+	static size_t _outPrecision;	// флаг количества знаков после запятой при выводе комплексного числа
 
 public:
 	Complex(double re = 0.0, double im = 0.0); // конструкторо алгебраической формы
@@ -102,7 +110,7 @@ public:
 
 		if (Complex::_outForm == OutForm::OUT_ALG) // выбор формы вывода
 		{
-			if (!_IsZero(complex._re)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
+			if (!CompareDouble::IsZero(complex._re)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
 			{
 				os << complex._re;
 			}
@@ -111,7 +119,7 @@ public:
 				os << '0';
 			}
 
-			if (!_IsZero(complex._im)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
+			if (!CompareDouble::IsZero(complex._im)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
 			{
 				os.setf(std::ios::showpos);
 				os << complex._im << 'j';
@@ -124,11 +132,11 @@ public:
 		}
 		else
 		{
-			if (!_IsZero(complex._mod)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
+			if (!CompareDouble::IsZero(complex._mod)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
 			{
 				os << complex._mod;
 
-				if (!_IsZero(complex._arg)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
+				if (!CompareDouble::IsZero(complex._arg)) // проверяем значение на отличие от нуля, чтобы не выводить нулевые значения
 				{
 					os << "e^" << complex._arg << 'j';
 				}

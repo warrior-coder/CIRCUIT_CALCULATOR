@@ -11,11 +11,6 @@ using namespace cc;
 
 int main()
 {
-	// устанавливаем режим консоли
-	setlocale(LC_ALL, "ru");
-	cout.setf(ios::fixed);
-	cout.precision(4);
-
 	try
 	{
 		// указываем файл с данными электрической цепи
@@ -28,7 +23,7 @@ int main()
 		MatrixD IR = CircuitCalculator::CalculateCircuit(circuitDC);
 
 		// выводим результат в консоль
-		cout << "Токи в сопротивлениях ветвей, А" << endl;
+		cout << "Currents in branches:" << endl;
 		cout << IR << endl;
 	}
 	catch (const std::exception& ex)

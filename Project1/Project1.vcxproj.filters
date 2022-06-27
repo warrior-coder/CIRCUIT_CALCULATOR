@@ -26,6 +26,7 @@
     <Text Include="Resources\CircuitData1.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Resources\CircuitData3.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\CircuitDC.hpp">

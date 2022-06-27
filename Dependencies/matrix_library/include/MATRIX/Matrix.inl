@@ -1,12 +1,53 @@
 // файл "Matrix.inl"
-// в данном файле реализован шаблон класса Matrix для работы с матрицами
+// в данном встраиваемом файле реализован шаблон класса Matrix для работы с матрицами
+
 
 namespace mtx
 {
 
+
+// определяем epsilon
+double CompareDouble::_epsilon{ 1e-14 };
+
+
+// макрос сравнения числа с бесконечно малым
+template<typename T>
+bool CompareDouble::IsZero(const T& value) noexcept
+{
+	return static_cast<double>(value) < _epsilon && -static_cast<double>(value) < _epsilon;
+}
+
+// макрос равенства двух чисел с бесконечно малой точностью
+template<typename T>
+bool CompareDouble::AreEqual(const T& value1, const T& value2) noexcept
+{
+	return static_cast<double>(value1 - value2) < _epsilon && -static_cast<double>(value1 - value2) < _epsilon;
+}
+
+// метод установки свойств
+void CompareDouble::SetEpsilon(const double& epsilon) noexcept
+{
+	_epsilon = epsilon;
+}
+
+// метод получения свойств
+double CompareDouble::GetEpsilon(const double& epsilon) noexcept
+{
+	return _epsilon;
+}
+
+
+// определяем флаги вывода
+template<typename T>
+size_t Matrix<T>::_outPrecision{ 3u };
+
+template<typename T>
+size_t Matrix<T>::_outColumnWidth{ 10u };
+
+
 // конструктор перемещения вектора векторов
 template<typename T>
-Matrix<T>::Matrix(std::vector<std::vector<T>>&& data)
+Matrix<T>::Matrix(std::vector<std::vector<T>>&& data) noexcept
 	: _data(std::move(data))
 	, _rows(_data.size())
 	, _columns(_data.front().size())
@@ -82,7 +123,7 @@ Matrix<T>::Matrix(Matrix&& matrix)
 
 // метод валидации матрицы
 template<typename T>
-inline void Matrix<T>::Validate() const
+void Matrix<T>::Validate() const
 {
 	if (_rows == 0)
 	{
@@ -229,7 +270,7 @@ bool Matrix<T>::operator==(const Matrix& matrix2) const
 	{
 		for (size_t j = 0; j < _columns; ++j)
 		{
-			if (!_IsZero(_data[i][j] - matrix2._data[i][j])) return false;
+			if (!CompareDouble::AreEqual(_data[i][j], matrix2._data[i][j])) return false;
 		}
 	}
 
@@ -248,7 +289,7 @@ bool Matrix<T>::operator!=(const Matrix& matrix2) const
 	{
 		for (size_t j = 0; j < _columns; ++j)
 		{
-			if (!_IsZero(_data[i][j] - matrix2._data[i][j])) return true;
+			if (!CompareDouble::AreEqual(_data[i][j], matrix2._data[i][j])) return true;
 		}
 	}
 
@@ -372,7 +413,7 @@ Matrix<T> Matrix<T>::GetReverse() const
 
 	T determinant(GetDeterminant());
 
-	if (_IsZero(determinant))
+	if (CompareDouble::IsZero(determinant))
 	{
 		throw std::logic_error("zero_determinant"); // если определитель 0, то обратная матрица отсуствует
 	}
@@ -450,28 +491,28 @@ Matrix<T>& Matrix<T>::Clear(const T& value)
 
 // является ли матрица столбцом
 template<typename T>
-inline bool Matrix<T>::IsSingleColumn() const noexcept
+bool Matrix<T>::IsSingleColumn() const noexcept
 {
 	return _columns == 1;
 }
 
 // совместимы ли матрицы
 template<typename T>
-inline bool Matrix<T>::IsCompatibleTo(const Matrix& matrix2) const noexcept
+bool Matrix<T>::IsCompatibleTo(const Matrix& matrix2) const noexcept
 {
 	return _columns == matrix2._rows;
 }
 
 // одинаковые ли размеры матриц
 template<typename T>
-inline bool Matrix<T>::IsEqualSizeTo(const Matrix& matrix2) const noexcept
+bool Matrix<T>::IsEqualSizeTo(const Matrix& matrix2) const noexcept
 {
 	return _columns == matrix2._columns && _rows == matrix2._rows;
 }
 
 // является ли матрица квадратной
 template<typename T>
-inline bool Matrix<T>::IsSquare() const noexcept
+bool Matrix<T>::IsSquare() const noexcept
 {
 	return static_cast<bool>(_order);
 }
@@ -491,11 +532,11 @@ bool Matrix<T>::IsIdentity() const
 		{
 			if (i == j)
 			{
-				if (!_IsZero(_data[i][j] - 1)) return false;
+				if (!CompareDouble::IsZero(_data[i][j] - 1)) return false;
 			}
 			else
 			{
-				if (!_IsZero(_data[i][j])) return false;
+				if (!CompareDouble::IsZero(_data[i][j])) return false;
 			}
 		}
 	}
@@ -516,7 +557,7 @@ bool Matrix<T>::IsDiagonal() const
 	{
 		for (size_t j = 0; j < _order; ++j)
 		{
-			if (i != j && !_IsZero(_data[i][j])) return false;
+			if (i != j && !CompareDouble::IsZero(_data[i][j])) return false;
 		}
 	}
 
@@ -525,19 +566,19 @@ bool Matrix<T>::IsDiagonal() const
 
 // методы получения свойств матрицы
 template<typename T>
-inline size_t Matrix<T>::GetRows() const noexcept
+size_t Matrix<T>::GetRows() const noexcept
 {
 	return _rows;
 }
 
 template<typename T>
-inline size_t Matrix<T>::GetColumns() const noexcept
+size_t Matrix<T>::GetColumns() const noexcept
 {
 	return _columns;
 }
 
 template<typename T>
-inline size_t Matrix<T>::GetOrder() const noexcept
+size_t Matrix<T>::GetOrder() const noexcept
 {
 	return _order; // порядок матрицы (только для квадратных матриц, иначе 0)
 }

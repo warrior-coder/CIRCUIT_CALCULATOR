@@ -27,7 +27,6 @@ typedef struct _CircuitBranch // структура обобщенной ветви электрической цепи
 	double RValue;		// значение сопротивления ветви
 	double EValue;		// значение источника напряжения ветви
 	double JValue;		// значение источника тока ветви
-
 }CircuitBranch;
 
 
@@ -40,12 +39,7 @@ private:
 	std::vector<CircuitBranch> _circuitBranches;	// ориентированный граф ветвей
 
 public:
-	// конструктор по умолчанию
-	CircuitDC()
-		: _branchesCount(0u)
-		, _nodesCount(0u)
-		, _circuitBranches(0u)
-	{}
+	CircuitDC() = delete; // конструктор по умолчанию
 
 	// конструктор от массива строк данных (данные в строках должны быть разделены пробелами)
 	explicit CircuitDC(const std::vector<std::string>& data)
@@ -72,11 +66,22 @@ public:
 
 	~CircuitDC() = default; // деструктор по умолчанию
 
+	// методы получения свойств
+	size_t GetBranchesCount() const noexcept
+	{
+		return _branchesCount;
+	}
+	
+	size_t GetNodesCount() const noexcept
+	{
+		return _nodesCount;
+	}
+
 	// создает топологическую узловую матрицу по графу исходной цепи
 	// в матрице соединений A высота равна числу узлов без одного (базисного), а ширина – числу ветвей графа
 	// элемент матрицы Aij равен
-	// 0,  если ветвь j не принадлежит узлу i
-	// 1,  если ветвь j выходит из узла i
+	//  0, если ветвь j не принадлежит узлу i
+	//  1, если ветвь j выходит из узла i
 	// -1, если ветвь j входит в узел i
 	mtx::MatrixD GetNodalMatrix() const
 	{
