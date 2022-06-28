@@ -7,21 +7,19 @@ namespace mtx
 
 
 // определяем epsilon
-double CompareDouble::_epsilon{ 1e-14 };
+double CompareDouble::_epsilon{ 1.0e-14 };
 
 
 // макрос сравнения числа с бесконечно малым
-template<typename T>
-bool CompareDouble::IsZero(const T& value) noexcept
+bool CompareDouble::IsZero(const double& value) noexcept
 {
-	return static_cast<double>(value) < _epsilon && -static_cast<double>(value) < _epsilon;
+	return value < _epsilon && -value < _epsilon;
 }
 
 // макрос равенства двух чисел с бесконечно малой точностью
-template<typename T>
-bool CompareDouble::AreEqual(const T& value1, const T& value2) noexcept
+bool CompareDouble::AreEqual(const double& value1, const double& value2) noexcept
 {
-	return static_cast<double>(value1 - value2) < _epsilon && -static_cast<double>(value1 - value2) < _epsilon;
+	return (value1 - value2) < _epsilon && -(value1 - value2) < _epsilon;
 }
 
 // метод установки свойств
@@ -127,7 +125,7 @@ void Matrix<T>::Validate() const
 {
 	if (_rows == 0)
 	{
-		throw std::invalid_argument{ "rows_cant_be_0" };
+		throw std::invalid_argument("rows_cant_be_0");
 	}
 
 	if (_columns == 0)
@@ -581,6 +579,19 @@ template<typename T>
 size_t Matrix<T>::GetOrder() const noexcept
 {
 	return _order; // порядок матрицы (только для квадратных матриц, иначе 0)
+}
+
+// методы установки флагов вывода
+template<typename T>
+void Matrix<T>::SetOutPrecision(const size_t& outPrecision)
+{
+	Matrix<T>::_outPrecision = outPrecision;
+}
+
+template<typename T>
+void Matrix<T>::SetOutColumnWidth(const size_t& outColumnWidth)
+{
+	Matrix<T>::_outColumnWidth = outColumnWidth;
 }
 
 }

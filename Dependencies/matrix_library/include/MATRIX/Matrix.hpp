@@ -1,8 +1,8 @@
 // файл "Matrix.hpp"
 // в данном файле описан шаблонный класс Matrix дл€ работы с матрицами
-// выведение шаблона класса происходит во врем€ компил€ции, поэтому вынести реализацию в .lib (в .cpp) не получитс€
-// реализацию необходимо отставить в .h файле (дл€ удобства она вынесена в .inl файл, а при компил€ции будет встроена)
-// таким образом библиотека header-only
+// выведение шаблона класса происходит во врем€ компил€ции, поэтому заранее скомиплировать реализацию в .LIB не получитс€
+// реализацию необходимо отставить в .H файле (дл€ удобства она вынесена в .INL файл, а при компил€ции его содержание будет встроено)
+// таким образом библиотека €вл€етс€ header-only
 
 #pragma once // защита от повторного включени€ заголовочного файла
 
@@ -25,22 +25,35 @@ private:
 	static double _epsilon; // бесконечно малое число дл€ double
 
 public:
-	template<typename T>
-	static bool IsZero(const T& value) noexcept; // макрос сравнени€ числа с бесконечно малым
-	
-	template<typename T>
-	static bool AreEqual(const T& value1, const T& value2) noexcept; // макрос равенства двух чисел с бесконечно малой точностью
+	static bool IsZero(const double& value) noexcept; // сравнение числа с бесконечно малым
+	static bool AreEqual(const double& value1, const double& value2) noexcept; // равенство двух чисел с бесконечно малой точностью
+
+#ifdef _COMPLEX_HPP_ // используем перегрузки дл€ комплексных чисел при условии подключенной библиотеки
+
+	// сравнение числа с бесконечно малым
+	static bool IsZero(const cpx::Complex& complex) noexcept
+	{
+		return complex.GetMod() < _epsilon && -complex.GetMod() < _epsilon;
+	}
+
+	// равенство двух чисел с бесконечно малой точностью
+	static bool AreEqual(const cpx::Complex& complex1, const cpx::Complex& complex2) noexcept
+	{
+		return (complex1 - complex2).GetMod() < _epsilon && -(complex1 - complex2).GetMod() < _epsilon;
+	}
+
+#endif // _COMPLEX_HPP_
 
 	static void SetEpsilon(const double& epsilon) noexcept; // метод установки свойств
 	static double GetEpsilon(const double& epsilon) noexcept; // метод получени€ свойств
 };
 
 
-
 constexpr int _MinusOnePower(const int& power) noexcept // функци€ возведени€ -1 в целую степень
 {
 	return power % 2 ? -1 : 1;
 }
+
 
 template <typename T>
 class Matrix // класс матрица
@@ -104,15 +117,8 @@ public:
 	size_t GetColumns() const noexcept;
 	size_t GetOrder() const noexcept;
 
-	void SetOutPrecision(const size_t& outPrecision)
-	{
-		Matrix::_outPrecision = outPrecision;
-	}
-
-	void SetOutColumnWidth(const size_t& outColumnWidth)
-	{
-		Matrix::_outColumnWidth = outColumnWidth;
-	}
+	void SetOutPrecision(const size_t& outPrecision); // методы установки флагов вывода
+	void SetOutColumnWidth(const size_t& outColumnWidth);
 
 	friend std::ostream& operator<<(std::ostream& os, const Matrix& matrix) // функци€ вывода матрицы на консоль
 	{
@@ -138,11 +144,12 @@ public:
 	}
 };
 
+
 using Double = double;
 using MatrixD = Matrix<Double>;
 
 
-#ifdef _COMPLEX_HPP_
+#ifdef _COMPLEX_HPP_ // определ€ем матрицу комплексных чисел при условии подключенной библиотеки
 
 using MatrixC = Matrix<cpx::Complex>;
 
