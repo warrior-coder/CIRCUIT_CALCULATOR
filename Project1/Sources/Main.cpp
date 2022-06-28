@@ -2,6 +2,7 @@
 #include "COMPLEX/Complex.hpp" // подключаем библиотеку "Complex.hpp" для работы с комплексными числами
 #include "MATRIX/Matrix.hpp" // подключаем библиотеку "Matrix.hpp" для работы с матрицами
 #include "ReaderTXT.hpp"
+#include "CircuitDC.hpp"
 #include "CircuitAC.hpp"
 #include "CircuitCalculator.hpp"
 

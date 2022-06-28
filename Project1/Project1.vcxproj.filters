@@ -18,6 +18,12 @@
     <ClCompile Include="Sources\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\FileReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\ReaderTXT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\CircuitData2.txt">
@@ -29,19 +35,19 @@
     <Text Include="Resources\CircuitData3.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\CircuitDC.hpp">
+    <ClInclude Include="Sources\CircuitAC.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\CircuitCalculator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\ReaderTXT.hpp">
+    <ClInclude Include="Sources\CircuitDC.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\FileReader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\CircuitAC.hpp">
+    <ClInclude Include="Sources\ReaderTXT.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

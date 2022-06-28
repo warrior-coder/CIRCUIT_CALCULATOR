@@ -130,7 +130,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\FileReader.cpp" />
     <ClCompile Include="Sources\Main.cpp" />
+    <ClCompile Include="Sources\ReaderTXT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\CircuitData1.txt" />
@@ -139,10 +141,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\CircuitAC.hpp" />
+    <ClInclude Include="Sources\CircuitCalculator.hpp" />
+    <ClInclude Include="Sources\CircuitDC.hpp" />
     <ClInclude Include="Sources\FileReader.hpp" />
     <ClInclude Include="Sources\ReaderTXT.hpp" />
-    <ClInclude Include="Sources\CircuitDC.hpp" />
-    <ClInclude Include="Sources\CircuitCalculator.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

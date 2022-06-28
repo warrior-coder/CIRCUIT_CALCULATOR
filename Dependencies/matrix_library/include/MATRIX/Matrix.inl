@@ -113,7 +113,7 @@ Matrix<T>::Matrix(const Matrix& matrix)
 
 // конструктор перемещения матрицы
 template<typename T>
-Matrix<T>::Matrix(Matrix&& matrix)
+Matrix<T>::Matrix(Matrix&& matrix) noexcept
 	: Matrix(std::move(matrix._data)) // вызываем контруктор перемещения вектора векторов
 {
 	this->Validate();

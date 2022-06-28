@@ -74,7 +74,7 @@ public:
 	explicit Matrix(size_t order, const T& value); // конструктор заполнения диагональной матрицы определенного порядка
 	explicit Matrix(const std::vector<T>& data); // конструктор копирования вектора
 	Matrix(const Matrix& matrix); // конструктор копирования матрицы
-	Matrix(Matrix&& matrix); // конструктор перемещения матрицы
+	Matrix(Matrix&& matrix) noexcept; // конструктор перемещения матрицы
 
 	~Matrix() = default; // деструктор
 
