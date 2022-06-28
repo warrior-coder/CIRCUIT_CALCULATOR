@@ -7,24 +7,32 @@
 #include <vector>
 #include <fstream>
 
+
 namespace cc
 {
 
-// интерфейс читатель файлов
-class FileReader
+class FileReader // интерфейс читатель файлов
 {
 protected:
 	std::string _path;
 
 public:
-	explicit FileReader(const std::string& path)
-		: _path(path)
-	{}
+	explicit FileReader(const std::string& path); // конструктор
 
 	virtual ~FileReader() = default; // виртуальный деструктор по умолчанию
+
 	virtual std::vector<std::string> Read() = 0; // чисто виртуальный метод чтения файла
 	virtual std::string GetPath() const noexcept = 0; // чисто виртуальный метод получения свойств
 	virtual void SetPath(const std::string& path) = 0; // чисто виртуальный метод установки свойств
 };
+
+}
+
+namespace cc
+{
+
+FileReader::FileReader(const std::string& path)
+	: _path(path)
+{}
 
 }
