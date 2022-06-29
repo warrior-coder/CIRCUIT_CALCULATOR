@@ -15,18 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\CircuitData2.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="Resources\CircuitData1.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="Resources\CircuitData3.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
+    <ClInclude Include="Sources\ReaderTXT.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\FileReader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\CircuitDC.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\CircuitCalculator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\CircuitAC.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Main.cpp">
+    <ClCompile Include="Sources\ReaderTXT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\FileReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

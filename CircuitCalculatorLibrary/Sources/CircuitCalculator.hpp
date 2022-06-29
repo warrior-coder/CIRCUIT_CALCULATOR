@@ -8,6 +8,7 @@
 #include "MATRIX/Matrix.hpp" // подключаем библиотеку "Matrix.hpp" для работы с матрицами
 #include "CircuitDC.hpp"
 #include "CircuitAC.hpp"
+#include "ReaderTXT.hpp" // заранее подключаем читатель .TXT файлов
 
 
 namespace cc
@@ -15,7 +16,7 @@ namespace cc
 
 enum CalculationLog // перечисление флагов вывода промежуточных вычислений электрической цепи
 {
-	NO_LOG			= 0b00000000,
+	LOG_NO			= 0b00000000,
 	LOG_R_MATRIX	= 0b00000001,
 	LOG_E_MATRIX	= 0b00000010,
 	LOG_J_MATRIX	= 0b00000100,
@@ -23,7 +24,8 @@ enum CalculationLog // перечисление флагов вывода промежуточных вычислений элект
 	LOG_A_MATRIX	= 0b00010000,
 	LOG_G_MATRIX	= 0b00100000,
 	LOG_U_MATRIX	= 0b01000000,
-	LOG_F_MATRIX	= 0b10000000
+	LOG_F_MATRIX	= 0b10000000,
+	LOG_ALL			= 0b11111111
 };
 
 
@@ -51,7 +53,7 @@ namespace cc
 {
 
 // определение статической переменной
-char CircuitCalculator::_calculationLog{ NO_LOG };
+char CircuitCalculator::_calculationLog{ LOG_NO };
 
 
 // функция расчета электрической цепи постоянного тока методом узловых потенциалов
@@ -60,49 +62,49 @@ mtx::MatrixD CircuitCalculator::CalculateCircuit(const CircuitDC& circuitDC)
 	mtx::MatrixD R = circuitDC.GetResistorsMatrix(); // задаем матрицу с исходными данными сопротивлений
 	if (_calculationLog & LOG_R_MATRIX)
 	{
-		std::cout << R << std::endl;
+		std::cout << "Resistors matrix:\n" << R << std::endl;
 	}
 
 	mtx::MatrixD E = circuitDC.GetVoltageSourcesMatrix(); // задаем матрицу с исходными данными источников напряжений
 	if (_calculationLog & LOG_E_MATRIX)
 	{
-		std::cout << E << std::endl;
+		std::cout << "Voltage sources matrix:\n" << E << std::endl;
 	}
 
 	mtx::MatrixD J = circuitDC.GetCurrentSourcesMatrix(); // задаем матрицу с исходными данными источников тока
 	if (_calculationLog & LOG_J_MATRIX)
 	{
-		std::cout << J << std::endl;
+		std::cout << "Current sources matrix:\n" << J << std::endl;
 	}
 
 	mtx::MatrixD RD = R.GetDiagonal(); // формируем диагональную матрицу RD из матрицы R
 	if (_calculationLog & LOG_RD_MATRIX)
 	{
-		std::cout << RD << std::endl;
+		std::cout << "Resistors diagonal matrix:\n" << RD << std::endl;
 	}
 
 	mtx::MatrixD A = circuitDC.GetNodalMatrix(); // формируем матрицу соединений A для графа цепи
 	if (_calculationLog & LOG_A_MATRIX)
 	{
-		std::cout << A << std::endl;
+		std::cout << "Nodal matrix:\n" << A << std::endl;
 	}
 
 	mtx::MatrixD G = RD.GetReverse(); // формируем матрицу проводимости G из матрицы RD
 	if (_calculationLog & LOG_G_MATRIX)
 	{
-		std::cout << G << std::endl;
+		std::cout << "Conductivity diagonal matrix:\n" << G << std::endl;
 	}
 
 	mtx::MatrixD F = (A * G * A.GetTransposed()).GetReverse() * (-A * G * E - A * J); // вычисляем потенциалы всех узлов цепи по отношению к базисному узлу
 	if (_calculationLog & LOG_F_MATRIX)
 	{
-		std::cout << F << std::endl;
+		std::cout << "Nodes potentials (relative to the last):\n" << F << std::endl;
 	}
 
 	mtx::MatrixD U = A.GetTransposed() * F; // вычисляем напряжение на всех ветвях цепи
 	if (_calculationLog & LOG_U_MATRIX)
 	{
-		std::cout << U << std::endl;
+		std::cout << "Voltages on branches:\n" << U << std::endl;
 	}
 
 	mtx::MatrixD IR = G * (U + E); // вычисляем токи в сопротивлениях ветвей

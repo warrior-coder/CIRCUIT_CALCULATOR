@@ -1,5 +1,5 @@
 // файл "ReaderTXT.hpp"
-// в данном файле описан класс ReaderTXT для чтения файлов формата .txt
+// в данном файле описан класс ReaderTXT для чтения файлов формата .TXT
 
 #pragma once
 
@@ -11,7 +11,7 @@
 namespace cc
 {
 
-class ReaderTXT : public FileReader // класс читатель .txt файлов
+class ReaderTXT : public FileReader // класс читатель .TXT файлов
 {
 public:
 	ReaderTXT(); // конструктор по умолчанию
